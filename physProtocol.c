@@ -1,6 +1,7 @@
 #include "physProtocol.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 void createPhysItem(void *obj, int startx, int starty, struct physItem *target){
     *target = (struct physItem)
@@ -16,11 +17,11 @@ void destroyPhysItem(struct physItem *target){
     free(target);
 }
 
-struct physItem *getPhysItem(struct plElem *target){
+struct physItem *getPhysItemFromPlElem(struct plElem *target){
     return target->curr;
 }
 
-void *getItem(struct physItem * target){
+void *getItemFromPhysItem(struct physItem * target){
     return target->i;
 }
 
@@ -67,15 +68,16 @@ void progressPlElem(struct plElem **target){
     ptr = ptr->next;
 }
 
-void plIterate(struct physList *pList){
+void plIterate(struct physList *pList, int topLeftX, int topLeftY){
     struct plElem *tmp = pList->head;
     int num = pList->size;
 
     for (int i = 0; i < num && tmp != NULL; i++){
         // do something with tmp.
-        struct physItem *pi = getPhysItem(tmp);
-        if (!skipProcessing(pi)){
-            processPhysItem(pi);
+        struct physItem *pitem = getPhysItemFromPlElem(tmp);
+        if (!skipProcessing(pitem)){
+            processPhysItem(pitem);
+            mvprintw(topLeftY+ pitem->coords.y, topLeftX+ pitem->coords.x, (char*)getItemFromPhysItem);
         }
         progressPlElem(&tmp);
     }

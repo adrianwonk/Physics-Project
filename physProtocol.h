@@ -22,9 +22,8 @@ struct physItem {
     struct vect coords;
 };
 void createPhysItem(void *obj, int startx, int starty, struct physItem *target);
-
 void processPhysItem(struct physItem *target);
-void *getItem(struct physItem * target);
+void *getItemFromPhysItem(struct physItem * target);
 bool skipProcessing(struct physItem *target);
 void destroyPhysItem(struct physItem *);
 
@@ -32,7 +31,7 @@ struct plElem {
     struct physItem *curr;
     struct plElem *next;
 };
-struct physItem *getPhysItem(struct plElem *);
+struct physItem *getPhysItemFromPlElem(struct plElem *);
 
 struct physList {
     int size;
@@ -44,4 +43,4 @@ void progressPlElem(struct plElem **target);
 void plInit(struct physList *);
 void plFree(struct physList *);
 void plSubscribe(struct physItem *, struct physList *);
-void plIterate(struct physList *);
+void plIterate(struct physList *, int topLeftX, int topRightY);

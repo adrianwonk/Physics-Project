@@ -15,29 +15,27 @@
 #define H 30 // grid Height
 #define W 60 // grid Width
 
-// global variables
-char *gridMatrix[H];
-
 void getCenter(int*, int*, int, int);
 
-int main(){
-    char *const gridData = malloc(sizeof(char) * H * W);
-    initGrid(gridMatrix, gridData, H, W);
+void drawGrid(int height, int width, int startx, int starty){
+    int limit = height * width;
+    for (int i=0; i < height; i++){
+        for (int j=0; j < width; j++)
+            mvprintw(starty + i, startx + j, ".");
+    }
+}
 
+int main(){
     // physics related, add some balls to list
     struct physList *pl = malloc(sizeof(struct physList));
     plInit(pl);
-    struct ball b = {
-        10
-    };
 
-    struct ball b2 = {
-        90
-    };
-
-    struct ball b3 = {
-        24
-    };
+    struct ball *b = malloc(sizeof(struct ball));
+    struct ball *b2 = malloc(sizeof(struct ball));
+    struct ball *b3 = malloc(sizeof(struct ball));
+    constructBall(b,10);
+    constructBall(b2,90);
+    constructBall(b3,24);
 
     struct physItem *pball = malloc(sizeof(struct physItem));
     struct physItem *pball2 = malloc(sizeof(struct physItem));
@@ -60,7 +58,8 @@ int main(){
 
     while (1){
         erase();
-        drawGrid(gridMatrix, H, W, topLeftX, topLeftY);
+        drawGrid(H, W, topLeftX, topLeftY);
+        plIterate(pl, topLeftX, topLeftY); // updates items and draws them too.
         refresh();
     }
     //// free allocated memory
@@ -69,6 +68,10 @@ int main(){
     free(pball);
     free(pball2);
     free(pball3);
+
+    free(ball);
+    free(ball2);
+    free(ball3);
 
     plFree(pl);
     destroyGrid(gridData);
