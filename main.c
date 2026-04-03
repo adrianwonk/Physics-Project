@@ -16,14 +16,7 @@
 #define W 60 // grid Width
 
 void getCenter(int*, int*, int, int);
-
-void drawGrid(int height, int width, int startx, int starty){
-    int limit = height * width;
-    for (int i=0; i < height; i++){
-        for (int j=0; j < width; j++)
-            mvprintw(starty + i, startx + j, ".");
-    }
-}
+void drawGrid(int height, int width, int startx, int starty);
 
 int main(){
     // physics related, add some balls to list
@@ -77,6 +70,14 @@ int main(){
     destroyGrid(gridData);
 
     return 0;
+}
+
+void drawGrid(int height, int width, int startx, int starty){
+    int limit = height * width;
+    for (int i=0; i < height; i++){
+        for (int j=0; j < width; j++)
+            mvprintw(starty + i, startx + j, ".");
+    }
 }
 
 void getCenter(int* x, int* y, int height, int width){
