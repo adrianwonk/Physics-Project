@@ -8,3 +8,6 @@ To make project using made Makefiles:
 To run project:
     build/main
 
+To run tests:
+    gcc $(find *.c ! -name "main.c") -lcriterion && ./a.out
+

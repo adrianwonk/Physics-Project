@@ -15,5 +15,7 @@ target_compile_features(main PRIVATE c_std_11)
 
 find_package(Curses REQUIRED)
 
-target_link_libraries(main PRIVATE ${CURSES_LIBRARIES})
+target_link_libraries(main PRIVATE 
+    ${CURSES_LIBRARIES}
+    m)
 target_include_directories(main PRIVATE ${CURSES_INCLUDE_DIRS})

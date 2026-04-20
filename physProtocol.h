@@ -12,6 +12,11 @@
 struct vect {
     int x; int y;
 };
+struct vect veAdd(struct vect v1, struct vect v2);
+struct vect veSub(struct vect v1, struct vect v2);
+float veSumOfSquare(struct vect v);
+float veDot(struct vect v1, struct vect v2);
+float veAngle(float sqr1, float sqr2, float dprod);
 
 struct physItem {
     void *i; // item //
@@ -21,11 +26,13 @@ struct physItem {
     bool processFlag;
     struct vect coords;
 };
+void collide(struct physItem *target, struct physItem *victim, float angle);
 void createPhysItem(void *obj, int startx, int starty, struct physItem *target);
 void processPhysItem(struct physItem *target);
 void *getItemFromPhysItem(struct physItem * target);
 bool skipProcessing(struct physItem *target);
 void destroyPhysItem(struct physItem *);
+void piApplyForce(struct physItem *target, struct vect force);
 
 struct plElem {
     struct physItem *curr;
@@ -43,4 +50,4 @@ void progressPlElem(struct plElem **target);
 void plInit(struct physList *);
 void plFree(struct physList *);
 void plSubscribe(struct physItem *, struct physList *);
-void plIterate(struct physList *, int topLeftX, int topRightY);
+void plIterate(struct physList *, int topLeftX, int topRightY, int, int);

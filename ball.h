@@ -1,6 +1,6 @@
 struct ball{
-    char repChar,
-    char terminatingChar,
+    char repChar;
+    char terminatingChar;
     float mass;
 };
 
