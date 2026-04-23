@@ -4,5 +4,4 @@ struct ball{
     float mass;
 };
 
-float getMassFloat(struct ball *);
-void constructBall(struct ball *target, float inp_mass);
+struct ball * constructItem(float inp_mass, char c);

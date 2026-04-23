@@ -7,7 +7,7 @@
 // describes a ball structure
 #include "ball.h"
 
-#include "physProtocol.h"
+#include "phys_protocol.h"
 
 #define H 20 // grid Height
 #define W 60 // grid Width

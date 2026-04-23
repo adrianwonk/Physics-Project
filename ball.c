@@ -1,20 +1,13 @@
 #include "ball.h"
+#include <stdlib.h>
 
-float getMassFloat(struct ball *target){
-    return target->mass + 1;
-}
-
-void constructBall(struct ball *target, float inp_mass){
-    constructItem(target, inp_mass, 'o');
-}
-
-void constructItem(struct ball *target, float inp_mass, char c){
-    *target = (struct ball) {
+struct ball * constructItem(float inp_mass, char c){
+    struct ball *tmp = malloc(sizeof(struct ball));
+    *tmp = (struct ball) {
         .repChar = c,
         .terminatingChar = '\0',
         .mass = inp_mass
     };
-}
-void constructFloor (struct ball *target){
-    constructItem(target, 99, 'x');
+
+    return tmp;
 }
