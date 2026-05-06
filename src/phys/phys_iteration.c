@@ -1,4 +1,4 @@
-#include "phys_protocol.h"
+#include "phys_iteration_func.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -6,6 +6,26 @@
 
 #define PI 3.1415927
 #define PI_HALF 1.5707964
+
+/* physItem forward declaration. Hide from outside.
+ * */
+//----------------------------------------------------/
+struct physItem *pi_create(void *obj, int startx, int starty, float radius); 
+
+void pi_destroy(struct physItem *target);
+
+bool pi_isOperational(struct physItem *target);
+
+void pi_applyForce(struct physItem *target, struct vect force);
+/****************************************************/
+
+/* forward declarations
+ * */
+//----------------------------------------------------/
+void phys_gravity(struct physItem *target);
+void phys_detect(struct physItem *origin, struct physList * pList);
+void phys_collide(struct physItem *target, struct physItem *victim, float angle);
+/****************************************************/
 
 /* phys iteration 
  * */
@@ -40,11 +60,11 @@ void phys_detect(struct physItem *origin, struct physList * pList){
     float sqrSumForce = ve_sumOfSquare(vect_force);
     float mag_force = root(sqrSumForce); 
 
-// iterator logic start
+    // iterator logic start
     struct physItem *target = pList->head;
     int num = pList->size;
     for (int i = 0; i < num && target != NULL; i++){
-////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
         if (target == origin) continue;
 
@@ -82,12 +102,12 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         // collide
 
         
-//////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
         target = target->next;
     }
-// iterator logic end
+    // iterator logic end
 
-// no collision detected
+    // no collision detected
     origin->coords = veAdd(origin->coords, origin->forces);
     origin->processFlag = false;
 }

@@ -5,12 +5,8 @@ project(physics LANGUAGES C)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
-
-add_executable(main
-  main.c
-  physProtocol.c
-  ball.c
-)
+file(GLOB_RECURSE SOURCES "src/*.c")
+add_executable(my_program ${SOURCES})
 target_compile_features(main PRIVATE c_std_11)
 
 find_package(Curses REQUIRED)

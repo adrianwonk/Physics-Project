@@ -1,5 +1,8 @@
 #include <criterion/criterion.h>
-#include "physProtocol.h"
+#include "phys.h"
+#include "math.h"
+#include "phys_iteration_func.h"
+#include "phys_physList_func.h"
 #include "ball.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,7 +39,7 @@ void prepList(){
     prepBalls();
     prepPhysItem();
     list = malloc(sizeof(struct physList));
-    plInit(list);
+    pl_create(list);
     plSubscribe(p1,list);
     plSubscribe(p2,list);
     plSubscribe(p3,list);
@@ -87,7 +90,7 @@ Test(physProtocol, plSubscribe){
     prepBalls();
     prepPhysItem();
     struct physList *list = malloc(sizeof(struct physList));
-    plInit(list);
+    pl_create(list);
     plSubscribe(p1,list);
     cr_assert(getItemFromPhysItem(getPhysItemFromPlElem(list->head)) == b1);
     plSubscribe(p2,list);

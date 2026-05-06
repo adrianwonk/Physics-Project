@@ -1,4 +1,5 @@
-#include "phys_protocol.h"
+#include "math.h"
+#include <math.h>
 /* vect functions
  * */
 struct vect ve_add(struct vect v1, struct vect v2){

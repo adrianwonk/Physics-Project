@@ -1,4 +1,4 @@
-#include "phys_protocol.h"
+#include "phys_physList_func.h"
 /* physList and physItem functions
  *  each physList manages memory for physItems.
 

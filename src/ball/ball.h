@@ -1,3 +1,4 @@
+#pragma once
 struct ball{
     char repChar;
     char terminatingChar;
