@@ -1,4 +1,5 @@
-#include "phys_iteration_func.h"
+#include "phys_physList.h"
+#include "objects.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -7,17 +8,6 @@
 #define PI 3.1415927
 #define PI_HALF 1.5707964
 
-/* physItem forward declaration. Hide from outside.
- * */
-//----------------------------------------------------/
-struct physItem *pi_create(void *obj, int startx, int starty, float radius); 
-
-void pi_destroy(struct physItem *target);
-
-bool pi_isOperational(struct physItem *target);
-
-void pi_applyForce(struct physItem *target, struct vect force);
-/****************************************************/
 
 /* forward declarations
  * */
@@ -43,7 +33,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
         }
         mvprintw(topLeftY+ tmp->coords.y,
                     topLeftX+ tmp->coords.x,
-                    (char*)getItemFromPhysItem(tmp));
+                    (char*)pi_getItem(tmp));
 
 ///////////////////////////////////////////////////////////
         tmp = tmp->next;
@@ -52,7 +42,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
 }
 
 void phys_gravity(struct physItem *target){
-    pi_applyForce(pitem, (struct vect) {0, 1});
+    pi_applyForce(target, (struct vect) {0, 1});
 }
 
 void phys_detect(struct physItem *origin, struct physList * pList){
@@ -87,7 +77,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         // second check, obtuse angle
         float dotProduct = ve_dot(vect_target, vect_force);
         float theta = ve_angle(sqrSumTarget, sqrSumForce, dotProduct);
-        if (ve_angle >= PI_HALF) continue;
+        if (theta >= PI_HALF) continue;
 
         // third check, case of shorter magnitudeForce < magnitudeTarget
         // and distance is greater than radius
@@ -108,7 +98,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
     // iterator logic end
 
     // no collision detected
-    origin->coords = veAdd(origin->coords, origin->forces);
+    origin->coords = ve_add(origin->coords, origin->forces);
     origin->processFlag = false;
 }
 

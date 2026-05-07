@@ -1,9 +1,9 @@
 #include <criterion/criterion.h>
-#include "phys.h"
-#include "math.h"
-#include "phys_iteration_func.h"
-#include "phys_physList_func.h"
-#include "ball.h"
+#include "phys/phys.h"
+#include "math/math.h"
+#include "phys/phys_physList.h"
+#include "phys/phys.h"
+#include "ball/ball.h"
 #include <stdlib.h>
 #include <stdio.h>
 

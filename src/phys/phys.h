@@ -1,45 +1,21 @@
 #pragma once
-/* Data structures:
- *   1. vect
- *   2. physList
- *   3. physItem
- * */
+#include "objects.h"
 
-struct vect;
-struct physList;
-struct physItem;
+/* shapes */
+struct ball * constructItem(float inp_mass, char c);
 
-/* vect
- * */
-struct vect {
-    int x; int y;
-};
+/* PhysList stuff*/
+struct physList * pl_create();
+
+// frees physList and all physItems within.
+void pl_destroy(struct physList *pList);
+
+void pl_subscribe(void *obj, int startx, int starty, struct physList *list,
+                  float radius);
 /****************************************************/
 
-/* physList
- *  tracks size and head ptr.
- * */
-struct physList {
-    int size;
-
-    // first element of the list
-    struct physItem *head;
-};
-/****************************************************/
-
-/* physItem
- *  phys wrapper for frontend objects.
- *  */
-struct physItem {
-    void *obj; // item //
-    
-    // cumulative forces to be applied next iteration. positive x is right, positive y is down
-    struct vect forces;
-    bool processFlag;
-    struct vect coords;
-    struct physItem *next;
-    float radius;
-};
+/* physics stuff*/
+void phys_iterate(struct physList *, int, int, int, int);
 /****************************************************/
 
 

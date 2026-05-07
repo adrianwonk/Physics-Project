@@ -1,5 +1,11 @@
 #pragma once
-#include "phys.h"
+
+/* vect
+ * */
+struct vect {
+    int x; int y;
+};
+/****************************************************/
 /* vect */
 struct vect ve_add(struct vect v1, struct vect v2);
 struct vect ve_sub(struct vect v1, struct vect v2);

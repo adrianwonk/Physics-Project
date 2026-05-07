@@ -7,7 +7,7 @@
 // describes a ball structure
 #include "ball/ball.h"
 
-#include "/phys/phys.h"
+#include "phys/phys.h"
 #include "math/math.h"
 #define H 20 // grid Height
 #define W 60 // grid Width
@@ -79,6 +79,6 @@ void getCenter(int* x, int* y, int width, int height){
 void addFloor(struct physList * pl){
     for (int i = 0; i < W; i++){
         floorB[i] = constructItem(3, 'o');
-        pl_subscribe(floorB[i],  0,  H, pl, 0.5f );
+        pl_subscribe(floorB[i],  i,  H, pl, 0.5f );
     }
 }

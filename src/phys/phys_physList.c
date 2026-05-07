@@ -1,4 +1,6 @@
-#include "phys_physList_func.h"
+#include "objects.h"
+#include <stdlib.h>
+#include "phys_physList.h"
 /* physList and physItem functions
  *  each physList manages memory for physItems.
 
@@ -23,7 +25,7 @@ void pl_destroy(struct physList *pList){
     for (int i = 0; i < num && tmp != NULL; i++){
         struct physItem *del = tmp;
         tmp = tmp->next;
-        free(del);
+        pi_destroy(del);
     }
 }
 
@@ -43,7 +45,7 @@ void pl_addItem(struct physItem *pItem, struct physList *pList){
 /* physItem
  * */
 struct physItem *pi_create(void *obj, int startx, int starty, float radius) {
-    struct physItem *target = malloc(sizeof(physItem));
+    struct physItem *target = malloc(sizeof(struct physItem));
     *target = (struct physItem) {
         .obj = obj,
         .forces = (struct vect){0,0},
@@ -53,6 +55,10 @@ struct physItem *pi_create(void *obj, int startx, int starty, float radius) {
         .radius = radius
     };
     return target;
+}
+
+void * pi_getItem(struct physItem * ptr){
+    return ptr -> obj;
 }
 
 void pi_destroy(struct physItem *target){
@@ -65,5 +71,5 @@ bool pi_isOperational(struct physItem *target){
 
 void pi_applyForce(struct physItem *target, struct vect force){
     target -> processFlag = true;
-    target -> forces = veAdd(target->forces, force);
+    target -> forces = ve_add(target->forces, force);
 }

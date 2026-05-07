@@ -17,3 +17,15 @@ void pl_subscribe(void *obj, int startx, int starty, struct physList *list,
 
 void pl_addItem(struct physItem *pItem, struct physList *pList);
 /****************************************************/
+
+/* physItem forward declaration. Hide from outside.
+ * */
+//----------------------------------------------------/
+struct physItem *pi_create(void *obj, int startx, int starty, float radius); 
+void *pi_getItem(struct physItem *target);
+void pi_destroy(struct physItem *target);
+
+bool pi_isOperational(struct physItem *target);
+
+void pi_applyForce(struct physItem *target, struct vect force);
+/****************************************************/
