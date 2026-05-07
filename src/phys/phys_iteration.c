@@ -24,7 +24,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
     // iterator logic start
     struct physItem *target = pList->head;
     int num = pList->size;
-    for (int i = 0; i < num && target != NULL; i++){
+    for (int i = 0; i < num && target != NULL; i++, target = target->next){
     ////////////////////////////////////////////////////////////
         if (target -> processFlag){
             phys_gravity(target);
@@ -35,7 +35,6 @@ void phys_iterate(struct physList *pList, int topLeftX,
                     (char*)pi_getItem(target));
 
     ///////////////////////////////////////////////////////////
-        target = target->next;
     }
     // iteator logic end
 }
@@ -52,7 +51,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
     // iterator logic start
     struct physItem *target = pList->head;
     int num = pList->size;
-    for (int i = 0; i < num && target != NULL; i++){
+    for (int i = 0; i < num && target != NULL; i++, target = target->next){
     ////////////////////////////////////////////////////////////
 
         if (target == origin) continue;
@@ -90,12 +89,10 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         
         // collide
         phys_collide(origin, target, theta);
-        
+        return;    
     //////////////////////////////////////////////////////////////
-        target = target->next;
     }
     // iterator logic end
-
     // no collision detected
     origin->coords = ve_add(origin->coords, origin->forces);
 }
@@ -103,6 +100,6 @@ void phys_detect(struct physItem *origin, struct physList * pList){
 void phys_collide(struct physItem *target, struct physItem *victim, float angle){
     target->processFlag = false;
     victim->processFlag = false;
-    target->coords = (struct vect){0,0};
-    victim->coords = (struct vect){3,0};
+    target->coords = (struct vect){target->coords.x,22};
+    victim->coords = (struct vect){target->coords.x,23};
 }

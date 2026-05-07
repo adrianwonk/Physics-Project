@@ -25,9 +25,9 @@ int main(){
     struct ball *b2 = constructItem(3, 'o');
     struct ball *b3 = constructItem(3, 'o');
 
-    pl_subscribe(b1, 0,  0, pl, 1.5f, true );
-    pl_subscribe(b2, 2,  5, pl, 2.5f, true );
-    pl_subscribe(b3, 4, 13, pl, 4.5f, true );
+    pl_subscribe(b1, 0,  0, pl, 0.5f, true );
+    pl_subscribe(b2, 2,  5, pl, 0.5f, true );
+    pl_subscribe(b3, 4, 13, pl, 0.5f, true );
 
     // init window
     initscr();
