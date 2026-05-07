@@ -89,7 +89,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         }
         
         // collide
-	phys_collide(origin, target, theta);
+        phys_collide(origin, target, theta);
         
     //////////////////////////////////////////////////////////////
         target = target->next;
@@ -98,7 +98,6 @@ void phys_detect(struct physItem *origin, struct physList * pList){
 
     // no collision detected
     origin->coords = ve_add(origin->coords, origin->forces);
-    origin->processFlag = false;
 }
 
 void phys_collide(struct physItem *target, struct physItem *victim, float angle){
