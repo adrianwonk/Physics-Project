@@ -30,8 +30,9 @@ void pl_destroy(struct physList *pList){
 }
 
 void pl_subscribe(void *obj, int startx, int starty, struct physList *list,
-                  float radius){
+                  float radius, bool process){
     struct physItem *tmp = pi_create(obj,startx,starty,radius);
+    tmp -> processFlag = process;
     pl_addItem(tmp,list);
 }
 

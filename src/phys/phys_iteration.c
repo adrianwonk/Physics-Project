@@ -21,24 +21,23 @@ void phys_collide(struct physItem *target, struct physItem *victim, float angle)
  * */
 void phys_iterate(struct physList *pList, int topLeftX,
                int topLeftY, int W, int H){
-// iterator logic start
-    struct physItem *tmp = pList->head;
+    // iterator logic start
+    struct physItem *target = pList->head;
     int num = pList->size;
-    for (int i = 0; i < num && tmp != NULL; i++){
-////////////////////////////////////////////////////////////
-
-        phys_gravity(tmp);
-        if (tmp -> processFlag){
-            phys_detect(tmp, pList);
+    for (int i = 0; i < num && target != NULL; i++){
+    ////////////////////////////////////////////////////////////
+        if (target -> processFlag){
+            phys_gravity(target);
+            phys_detect(target, pList);
         }
-        mvprintw(topLeftY+ tmp->coords.y,
-                    topLeftX+ tmp->coords.x,
-                    (char*)pi_getItem(tmp));
+        mvprintw(topLeftY+ target->coords.y,
+                    topLeftX+ target->coords.x,
+                    (char*)pi_getItem(target));
 
-///////////////////////////////////////////////////////////
-        tmp = tmp->next;
+    ///////////////////////////////////////////////////////////
+        target = target->next;
     }
-// iteator logic end
+    // iteator logic end
 }
 
 void phys_gravity(struct physItem *target){
@@ -90,7 +89,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         }
         
         // collide
-
+	phys_collide(origin, target, theta);
         
     //////////////////////////////////////////////////////////////
         target = target->next;

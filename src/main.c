@@ -4,9 +4,6 @@
 #include <pthread.h>
 #include <unistd.h>
 
-// describes a ball structure
-#include "ball/ball.h"
-
 #include "phys/phys.h"
 #include "math/math.h"
 #define H 20 // grid Height
@@ -15,7 +12,7 @@
 void getCenter(int*, int*, int, int);
 void drawGrid(int height, int width, int startx, int starty);
 void addFloor(struct physList * list);
-struct ball* floorB[W];
+struct ball * floorB[W];
 struct physItem * floorP[W];
 
 int main(){
@@ -28,9 +25,9 @@ int main(){
     struct ball *b2 = constructItem(3, 'o');
     struct ball *b3 = constructItem(3, 'o');
 
-    pl_subscribe(b1,  0,  0, pl, 1.5f );
-    pl_subscribe(b2, 2,  5, pl, 2.5f );
-    pl_subscribe(b3, 4, 13, pl, 4.5f );
+    pl_subscribe(b1, 0,  0, pl, 1.5f, false );
+    pl_subscribe(b2, 2,  5, pl, 2.5f, false  );
+    pl_subscribe(b3, 4, 13, pl, 4.5f, false );
 
     // init window
     initscr();
@@ -79,6 +76,6 @@ void getCenter(int* x, int* y, int width, int height){
 void addFloor(struct physList * pl){
     for (int i = 0; i < W; i++){
         floorB[i] = constructItem(3, 'o');
-        pl_subscribe(floorB[i],  i,  H, pl, 0.5f );
+        pl_subscribe(floorB[i],  i,  H-1, pl, 0.5f, false );
     }
 }

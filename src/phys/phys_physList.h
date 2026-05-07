@@ -13,7 +13,7 @@ struct physList * pl_create();
 void pl_destroy(struct physList *pList);
 
 void pl_subscribe(void *obj, int startx, int starty, struct physList *list,
-                  float radius);
+                  float radius, bool process);
 
 void pl_addItem(struct physItem *pItem, struct physList *pList);
 /****************************************************/

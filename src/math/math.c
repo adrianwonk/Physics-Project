@@ -21,7 +21,7 @@ float ve_dot(struct vect v1, struct vect v2){
 
 float ve_angle(float sqr1, float sqr2, float dprod){
     float multSqr = sqr1 * sqr2;
-    acosf(dprod * invSqr(multSqr));
+    return acosf(dprod * invSqr(multSqr));
 }
 /*******************************************************/
 
