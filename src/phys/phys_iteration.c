@@ -1,3 +1,4 @@
+#include <limits.h>
 #include "phys_physList.h"
 #include "objects.h"
 #include <stdio.h>
@@ -27,7 +28,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
     ////////////////////////////////////////////////////////////
         if (target -> processFlag){
             phys_gravity(target);
-            phys_detect(target, pList);
+            phys_detect(target, pList); // move and collide
         }
         mvprintw(topLeftY+ target->coords.y,
                     topLeftX+ target->coords.x,
@@ -39,7 +40,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
 }
 
 void phys_gravity(struct physItem *target){
-    pi_applyForce(target, (struct vect) {0, 1});
+    pi_applyForce(target, (struct vect) {2, 1});
 }
 
 void phys_detect(struct physItem *origin, struct physList * pList){
@@ -55,9 +56,8 @@ void phys_detect(struct physItem *origin, struct physList * pList){
     int num = pList->size;
 
     // Targets with minimum dist to origin
-    int max = 2^(sizeof(int) * 8 - 1) - 1;
     struct physItem* minTargs[5];
-    int minSqrSumDist=max;
+    float minSqrSumDist=INT_MAX;
     int minTargsIndex = 0;
 
     for (int i = 0; i < num && target != NULL; i++, target = target->next){
@@ -104,7 +104,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
     //////////////////////////////////////////////////////////////
     }
     //TODO finish integrating pi_list change to minTargsList
-    if (minSqrSumDist != max){
+    if (minSqrSumDist != INT_MAX){
         phys_collide(origin, minTargs, minTargsIndex);
         return;    
     } else {

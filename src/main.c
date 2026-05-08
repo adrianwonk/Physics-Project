@@ -23,9 +23,11 @@ int main(){
 
     struct ball *b1 = constructItem(3, 'o');
     struct ball *b2 = constructItem(3, 'o');
+    struct ball *b3 = constructItem(3, 'o');
 
-    pl_subscribe(b1, 5,  0, pl, 1.5f, true );
-    pl_subscribe(b2, 3,  17, pl, 0.5f, false );
+    pl_subscribe(b1, 0,  18, pl, 1, false );
+    pl_subscribe(b2, 2,  18, pl, 1, false );
+    pl_subscribe(b3, 1,  0, pl, 0.5f, true );
 
     // init window
     initscr();
@@ -41,7 +43,7 @@ int main(){
         drawGrid(H, W, topLeftX, topLeftY);
         phys_iterate(pl, topLeftX, topLeftY, W, H); // updates items and draws them too.
         refresh();
-        sleep(1);
+        usleep(800 * 1000);
     }
     //// free allocated memory
     endwin();
@@ -50,6 +52,7 @@ int main(){
     free(b1);
     free(b2);
     pl_destroy(pl);
+    free(b3);
 
     return 0;
 }
