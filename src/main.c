@@ -23,11 +23,9 @@ int main(){
 
     struct ball *b1 = constructItem(3, 'o');
     struct ball *b2 = constructItem(3, 'o');
-    struct ball *b3 = constructItem(3, 'o');
 
-    pl_subscribe(b1, 0,  0, pl, 0.5f, true );
-    pl_subscribe(b2, 2,  5, pl, 0.5f, true );
-    pl_subscribe(b3, 4, 13, pl, 0.5f, true );
+    pl_subscribe(b1, 5,  0, pl, 1.5f, true );
+    pl_subscribe(b2, 3,  17, pl, 0.5f, false );
 
     // init window
     initscr();
@@ -51,7 +49,6 @@ int main(){
 
     free(b1);
     free(b2);
-    free(b3);
     pl_destroy(pl);
 
     return 0;

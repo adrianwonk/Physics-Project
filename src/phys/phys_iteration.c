@@ -8,13 +8,12 @@
 #define PI 3.1415927
 #define PI_HALF 1.5707964
 
-
 /* forward declarations
  * */
 //----------------------------------------------------/
 void phys_gravity(struct physItem *target);
 void phys_detect(struct physItem *origin, struct physList * pList);
-void phys_collide(struct physItem *target, struct physItem *victim, float angle);
+void phys_collide(struct physItem *target, struct physItem **, int);
 /****************************************************/
 
 /* phys iteration 
@@ -44,6 +43,9 @@ void phys_gravity(struct physItem *target){
 }
 
 void phys_detect(struct physItem *origin, struct physList * pList){
+    /* 1. force applied to origin
+     * 2. pre-magnitude 
+     * 3.  magnitude */
     struct vect vect_force = origin->forces;
     float sqrSumForce = ve_sumOfSquare(vect_force);
     float mag_force = root(sqrSumForce); 
@@ -51,15 +53,17 @@ void phys_detect(struct physItem *origin, struct physList * pList){
     // iterator logic start
     struct physItem *target = pList->head;
     int num = pList->size;
+
+    // Targets with minimum dist to origin
+    int max = 2^(sizeof(int) * 8 - 1) - 1;
+    struct physItem* minTargs[5];
+    int minSqrSumDist=max;
+    int minTargsIndex = 0;
+
     for (int i = 0; i < num && target != NULL; i++, target = target->next){
     ////////////////////////////////////////////////////////////
-
         if (target == origin) continue;
 
-        // collision detection
-        // checks if origin touches target
-        ////////////////////////////////////////////
-        
         /* target: origin -> target
          * force: origin -> origin + force
          */ 
@@ -67,7 +71,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         float sqrSumTarget = ve_sumOfSquare(vect_target);
         float radius = target->radius + origin->radius;
 
-        // first check, magnitudeForce + radius < magnitudeTarget 
+        // CHECK 1: magnitudeForce + radius < magnitudeTarget 
         // via squared both sides
         if( sqrSumForce + sqr(radius) + 2.f * mag_force * radius
             < sqrSumTarget ) continue;
@@ -87,19 +91,32 @@ void phys_detect(struct physItem *origin, struct physList * pList){
             if (sqr(sinf(theta)) * sqrSumTarget >= sqr(radius)) continue;
         }
         
-        // collide
-        phys_collide(origin, target, theta);
-        return;    
+        // add to collision consideration
+        if (sqrSumTarget < minSqrSumDist){
+            minSqrSumDist = sqrSumTarget;
+            minTargsIndex = 1;
+            minTargs[0] = target;
+        }
+
+        else if (sqrSumTarget == minSqrSumDist){
+            minTargs[minTargsIndex++] = target;
+        }
     //////////////////////////////////////////////////////////////
     }
-    // iterator logic end
-    // no collision detected
-    origin->coords = ve_add(origin->coords, origin->forces);
+    //TODO finish integrating pi_list change to minTargsList
+    if (minSqrSumDist != max){
+        phys_collide(origin, minTargs, minTargsIndex);
+        return;    
+    } else {
+        origin->coords = ve_add(origin->coords, origin->forces);
+    }
 }
 
-void phys_collide(struct physItem *target, struct physItem *victim, float angle){
+void phys_collide(struct physItem *target, struct physItem **victimArr, int n){
     target->processFlag = false;
-    victim->processFlag = false;
     target->coords = (struct vect){target->coords.x,22};
-    victim->coords = (struct vect){target->coords.x,23};
+    for (int i = 0; i < n; i++){
+        victimArr[i]->processFlag = false;
+        victimArr[i]->coords = (struct vect){target->coords.x,23 + i};
+    }
 }
