@@ -15,7 +15,7 @@ void pl_subscribe(void *obj, int startx, int starty, struct physList *list,
 /****************************************************/
 
 /* physics stuff*/
-void phys_iterate(struct physList *, int, int, int, int);
+void phys_iterate(struct physList *, int, int, bool);
 /****************************************************/
 
 

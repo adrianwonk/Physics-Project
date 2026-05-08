@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ncurses.h>
+#include "math.h"
+#include "../main.h"
 
 #define PI 3.1415927
 #define PI_HALF 1.5707964
@@ -20,7 +22,7 @@ void phys_collide(struct physItem *target, struct physItem **, int);
 /* phys iteration 
  * */
 void phys_iterate(struct physList *pList, int topLeftX,
-               int topLeftY, int W, int H){
+               int topLeftY, bool clip){
     // iterator logic start
     struct physItem *target = pList->head;
     int num = pList->size;
@@ -30,9 +32,16 @@ void phys_iterate(struct physList *pList, int topLeftX,
             phys_gravity(target);
             phys_detect(target, pList); // move and collide
         }
-        mvprintw(topLeftY+ target->coords.y,
+        if (clip){
+            if (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0)
+               mvprintw(topLeftY+ target->coords.y,
                     topLeftX+ target->coords.x,
                     (char*)pi_getItem(target));
+        } else{
+           mvprintw(topLeftY+ target->coords.y,
+                    topLeftX+ target->coords.x,
+                    (char*)pi_getItem(target));
+        }
 
     ///////////////////////////////////////////////////////////
     }
