@@ -12,7 +12,6 @@ void getCenter(int*, int*);
 void drawGrid(int startx, int starty);
 
 int main(){
-    // physics related, add some balls to list
     struct physList *pl = pl_create();
     int topLeftX, topLeftY;
     getCenter(&topLeftX, &topLeftY);

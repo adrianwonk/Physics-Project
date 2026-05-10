@@ -1,6 +1,5 @@
 #include "objects.h"
 #include <stdlib.h>
-#include "phys_physList.h"
 /* physList and physItem functions
  *  each physList manages memory for physItems.
 

@@ -1,31 +1,49 @@
 #pragma once
 #include "phys.h"
-/* physList and physItem functions
- *  each physList manages memory for physItems.
-/****************************************************/
-
-/* physList
- * */
+/* objects */ 
 //----------------------------------------------------/
-struct physList * pl_create();
+    struct physList { // each physList manages memory for physItems.
+        int size;
 
-// frees physList and all physItems within.
-void pl_destroy(struct physList *pList);
+        // first element of the list
+        struct physItem *head;
+    };
 
-void pl_subscribe(void *obj, int startx, int starty, struct physList *list,
-                  float radius, bool process);
+    struct physItem { // phys wrapper for frontend objects.
+        void *obj; // item //
+        
+        // cumulative forces to be applied next iteration. positive x is right, positive y is down
+        struct vect forces;
+        bool processFlag;
+        struct vect coords;
+        struct physItem *next;
+        float radius;
+    };
+/******************************************************************/
 
-void pl_addItem(struct physItem *pItem, struct physList *pList);
-/****************************************************/
-
-/* physItem forward declaration. Hide from outside.
- * */
+/* physList and physItem functions, mirrors phys_physList.c implmentations */
 //----------------------------------------------------/
-struct physItem *pi_create(void *obj, int startx, int starty, float radius); 
-void *pi_getItem(struct physItem *target);
-void pi_destroy(struct physItem *target);
+    /* physList functions */
+    //----------------------------------------------------/
+        struct physList * pl_create();
 
-bool pi_isOperational(struct physItem *target);
+        // frees physList and all physItems within.
+        void pl_destroy(struct physList *pList);
 
-void pi_applyForce(struct physItem *target, struct vect force);
+        struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physList *list,
+                          float radius, bool process);
+
+        void pl_addItem(struct physItem *pItem, struct physList *pList);
+    /****************************************************/
+
+    /* physItem functions */
+    //----------------------------------------------------/
+        struct physItem *pi_create(void *obj, int startx, int starty, float radius); 
+        void *pi_getItem(struct physItem *target);
+        void pi_destroy(struct physItem *target);
+
+        bool pi_isOperational(struct physItem *target);
+
+        void pi_applyForce(struct physItem *target, struct vect force);
+    /****************************************************/
 /****************************************************/
