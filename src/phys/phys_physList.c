@@ -72,7 +72,9 @@ bool pi_isOperational(struct physItem *target){
 }
 
 void pi_applyForce(struct physItem *target, struct vect force){
-    // 
+    float mass = target -> mass;
+    struct vect accel = ve_scale(force, inv(mass));
+
     target -> processFlag = true;
     target -> forces = ve_add(target->forces, force);
 }

@@ -23,6 +23,10 @@ float ve_angle(float sqr1, float sqr2, float dprod){
     float multSqr = sqr1 * sqr2;
     return acosf(dprod * invSqr(multSqr));
 }
+
+struct vect ve_scale(struct vect v1, float scale){
+    return {v1.x * scale, v1.y * scale};
+}
 /*******************************************************/
 
 /* math functions*/
