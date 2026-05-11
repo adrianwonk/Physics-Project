@@ -14,11 +14,22 @@
 /* forward declarations
  * */
 //----------------------------------------------------/
-void phys_gravity(struct physItem *target);
-void phys_detect(struct physItem *origin, struct physList * pList);
-void phys_collide(struct physItem *target, struct physItem **, int);
+void phys_gravity(struct physItem *);
+void phys_detect(struct physItem *, struct physList *);
+void phys_collide(struct physItem *, struct physItem **, int);
+void phys_enforce(struct physItem *, float);
 /****************************************************/
 
+void phys_enforce(struct physItem *target, float delta){
+    float mass = target -> mass;
+    struct vect accel = ve_scale(force, inv(mass));
+    struct vect scaled = ve_scale(accel, delta);
+
+
+
+    // now we get to touching the displacement
+    target -> deltaD = ve_add(target->deltaD, );
+}
 /* phys iteration 
  * */
 void phys_iterate(struct physList *pList, int topLeftX,
@@ -30,6 +41,10 @@ void phys_iterate(struct physList *pList, int topLeftX,
     ////////////////////////////////////////////////////////////
         if (target -> processFlag){
             phys_gravity(target);
+            
+            // 1. Process force
+            phys_enforce(target);
+            // n. Process displacement change
             phys_detect(target, pList); // move and collide
         }
         if ( !clip || (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0) ){
@@ -50,7 +65,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
     /* 1. force applied to origin
      * 2. pre-magnitude 
      * 3.  magnitude */
-    struct vect vect_force = origin->forces;
+    struct vect vect_force = origin->deltaD;
     float sqrSumForce = ve_sumOfSquare(vect_force);
     float mag_force = root(sqrSumForce); 
 
@@ -110,7 +125,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         phys_collide(origin, minTargs, minTargsIndex);
         return;    
     } else {
-        origin->coords = ve_add(origin->coords, origin->forces);
+        origin->coords = ve_add(origin->coords, origin->deltaD);
     }
 }
 

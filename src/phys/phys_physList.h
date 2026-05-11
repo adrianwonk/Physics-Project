@@ -12,13 +12,14 @@
     struct physItem { // phys wrapper for frontend objects.
         void *obj; // item //
         
-        // cumulative forces to be applied next iteration. positive x is right, positive y is down
-        struct vect forces;
+        // delta displacement applied to coords each timestep, accumulated from forces
+        struct vect deltaD;
         bool processFlag;
         struct vect coords;
         struct physItem *next;
         float radius;
         float mass;
+        struct vect F_total;
     };
 /******************************************************************/
 

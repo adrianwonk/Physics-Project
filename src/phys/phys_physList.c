@@ -49,12 +49,13 @@ struct physItem *pi_create(void *obj, int startx, int starty, float radius, floa
     struct physItem *target = malloc(sizeof(struct physItem));
     *target = (struct physItem) {
         .obj = obj,
-        .forces = (struct vect){0,0},
+        .deltaD = (struct vect){0,0},
         .processFlag = false,
         .coords = (struct vect){startx, starty},
         .next = NULL,
         .radius = radius,
         .mass = mass
+        .F_total  = (struct vect) {0,0}
     };
     return target;
 }
@@ -72,9 +73,10 @@ bool pi_isOperational(struct physItem *target){
 }
 
 void pi_applyForce(struct physItem *target, struct vect force){
-    float mass = target -> mass;
-    struct vect accel = ve_scale(force, inv(mass));
-
+    target -> F_total = ve_add(target ->F_total, force);
+    
     target -> processFlag = true;
-    target -> forces = ve_add(target->forces, force);
 }
+    /* float mass = target -> mass; */
+    /* struct vect accel = ve_scale(force, inv(mass)); */
+    /* target -> deltaD = ve_add(target->deltaD, force); */
