@@ -13,7 +13,7 @@
         void *obj; // item //
         
         // delta displacement applied to coords each timestep, accumulated from forces
-        struct vect deltaD;
+        struct vect velocity;
         bool processFlag;
         struct vect coords;
         struct physItem *next;

@@ -15,25 +15,24 @@
  * */
 //----------------------------------------------------/
 void phys_gravity(struct physItem *);
-void phys_detect(struct physItem *, struct physList *);
+void phys_detect(struct physItem *, struct physList *, float);
 void phys_collide(struct physItem *, struct physItem **, int);
 void phys_enforce(struct physItem *, float);
 /****************************************************/
 
 void phys_enforce(struct physItem *target, float delta){
     float mass = target -> mass;
+    float force = target -> force;
+    target -> force = (struct vect){0,0};
+    
     struct vect accel = ve_scale(force, inv(mass));
     struct vect scaled = ve_scale(accel, delta);
-
-
-
-    // now we get to touching the displacement
-    target -> deltaD = ve_add(target->deltaD, );
+    target -> velocity = ve_add(target->velocity, scaled);
 }
 /* phys iteration 
  * */
 void phys_iterate(struct physList *pList, int topLeftX,
-               int topLeftY, bool clip){
+               int topLeftY, bool clip, float delta){
     // iterator logic start
     struct physItem *target = pList->head;
     int num = pList->size;
@@ -42,10 +41,10 @@ void phys_iterate(struct physList *pList, int topLeftX,
         if (target -> processFlag){
             phys_gravity(target);
             
-            // 1. Process force
-            phys_enforce(target);
+            // 1. Process force, accumulate velocity
+            phys_enforce(target, delta);
             // n. Process displacement change
-            phys_detect(target, pList); // move and collide
+            phys_detect(target, pList, delta); // move and collide
         }
         if ( !clip || (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0) ){
             mvprintw(topLeftY+ target->coords.y,
@@ -58,14 +57,14 @@ void phys_iterate(struct physList *pList, int topLeftX,
 }
 
 void phys_gravity(struct physItem *target){
-    pi_applyForce(target, (struct vect) {2, 1});
+    // bypasses force system cuz all objects have the same acceleration!
 }
 
-void phys_detect(struct physItem *origin, struct physList * pList){
+void phys_detect(struct physItem *origin, struct physList * pList, float delta){
     /* 1. force applied to origin
      * 2. pre-magnitude 
      * 3.  magnitude */
-    struct vect vect_force = origin->deltaD;
+    struct vect vect_force = origin->velocity;
     float sqrSumForce = ve_sumOfSquare(vect_force);
     float mag_force = root(sqrSumForce); 
 
@@ -125,7 +124,7 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         phys_collide(origin, minTargs, minTargsIndex);
         return;    
     } else {
-        origin->coords = ve_add(origin->coords, origin->deltaD);
+        origin->coords = ve_add(origin->coords, ve_scale(origin->velocity, delta));
     }
 }
 

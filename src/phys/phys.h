@@ -12,7 +12,7 @@
         void *obj; // item //
         
         // delta displacement applied to coords each timestep, accumulated from forces
-        struct vect deltaD;
+        struct vect velocity;
         bool processFlag;
         struct vect coords;
         struct physItem *next;
@@ -33,7 +33,7 @@ struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physLis
 /******************************************************************/
 
 /* physics stuff*/
-    void phys_iterate(struct physList *, int, int, bool);
+    void phys_iterate(struct physList *, int, int, bool, float);
     void pi_applyForce(struct physItem *target, struct vect force);
 /****************************************************/
 

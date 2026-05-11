@@ -49,7 +49,7 @@ struct physItem *pi_create(void *obj, int startx, int starty, float radius, floa
     struct physItem *target = malloc(sizeof(struct physItem));
     *target = (struct physItem) {
         .obj = obj,
-        .deltaD = (struct vect){0,0},
+        .velocity = (struct vect){0,0},
         .processFlag = false,
         .coords = (struct vect){startx, starty},
         .next = NULL,
