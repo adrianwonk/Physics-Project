@@ -29,8 +29,8 @@ void pl_destroy(struct physList *pList){
 }
 
 struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physList *list,
-                  float radius, bool process){
-    struct physItem *tmp = pi_create(obj,startx,starty,radius);
+                  float radius, bool process, float mass){
+    struct physItem *tmp = pi_create(obj,startx,starty,radius,mass);
     tmp -> processFlag = process;
     pl_addItem(tmp,list);
     return tmp;
@@ -45,7 +45,7 @@ void pl_addItem(struct physItem *pItem, struct physList *pList){
 
 /* physItem
  * */
-struct physItem *pi_create(void *obj, int startx, int starty, float radius) {
+struct physItem *pi_create(void *obj, int startx, int starty, float radius, float mass) {
     struct physItem *target = malloc(sizeof(struct physItem));
     *target = (struct physItem) {
         .obj = obj,
@@ -53,7 +53,8 @@ struct physItem *pi_create(void *obj, int startx, int starty, float radius) {
         .processFlag = false,
         .coords = (struct vect){startx, starty},
         .next = NULL,
-        .radius = radius
+        .radius = radius,
+        .mass = mass
     };
     return target;
 }
@@ -71,6 +72,7 @@ bool pi_isOperational(struct physItem *target){
 }
 
 void pi_applyForce(struct physItem *target, struct vect force){
+    // 
     target -> processFlag = true;
     target -> forces = ve_add(target->forces, force);
 }

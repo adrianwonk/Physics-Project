@@ -32,16 +32,10 @@ void phys_iterate(struct physList *pList, int topLeftX,
             phys_gravity(target);
             phys_detect(target, pList); // move and collide
         }
-        if (clip){
-            if (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0)
-               mvprintw(topLeftY+ target->coords.y,
-                    topLeftX+ target->coords.x,
-                    (char*)pi_getItem(target));
-        } else{
-           mvprintw(topLeftY+ target->coords.y,
-                    topLeftX+ target->coords.x,
-                    (char*)pi_getItem(target));
-        }
+        if ( !clip || (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0) ){
+            mvprintw(topLeftY+ target->coords.y,
+                topLeftX+ target->coords.x,
+                (char*)pi_getItem(target));
 
     ///////////////////////////////////////////////////////////
     }
@@ -112,7 +106,6 @@ void phys_detect(struct physItem *origin, struct physList * pList){
         }
     //////////////////////////////////////////////////////////////
     }
-    //TODO finish integrating pi_list change to minTargsList
     if (minSqrSumDist != INT_MAX){
         phys_collide(origin, minTargs, minTargsIndex);
         return;    

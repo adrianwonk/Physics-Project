@@ -18,6 +18,7 @@
         struct vect coords;
         struct physItem *next;
         float radius;
+        float mass;
     };
 /******************************************************************/
 
@@ -31,14 +32,14 @@
         void pl_destroy(struct physList *pList);
 
         struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physList *list,
-                          float radius, bool process);
+                          float radius, bool process, float mass);
 
         void pl_addItem(struct physItem *pItem, struct physList *pList);
     /****************************************************/
 
     /* physItem functions */
     //----------------------------------------------------/
-        struct physItem *pi_create(void *obj, int startx, int starty, float radius); 
+        struct physItem *pi_create(void *obj, int startx, int starty, float radius, float mass); 
         void *pi_getItem(struct physItem *target);
         void pi_destroy(struct physItem *target);
 
