@@ -1,4 +1,5 @@
 #pragma once
+#include "../math/math.h"
 /* objects */ 
 //----------------------------------------------------/
     struct physList { // each physList manages memory for physItems.

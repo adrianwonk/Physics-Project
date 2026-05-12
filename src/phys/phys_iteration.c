@@ -1,12 +1,12 @@
 #include <limits.h>
-#include "phys_physList.h"
-#include "objects.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <ncurses.h>
-#include "math.h"
-#include "../main.h"
+
+#include "phys.h"
+#include "phys_physList.c"
+#include "../const.h"
 
 #define PI 3.1415927
 #define PI_HALF 1.5707964
@@ -56,8 +56,11 @@ void phys_iterate(struct physList *pList, int topLeftX,
     // iteator logic end
 }
 
-void phys_gravity(struct physItem *target){
+void phys_gravity(struct physItem *target, float gravity, float delta){
     // bypasses force system cuz all objects have the same acceleration!
+    target -> velocity = ve_add(target -> velocity,
+            (struct vect){0, gravity * delta}
+    );
 }
 
 void phys_detect(struct physItem *origin, struct physList * pList, float delta){

@@ -3,10 +3,11 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
-#include "main.h"
+#include <time.h>
 
 #include "phys/phys.h"
 #include "math/math.h"
+#include "const.h"
 
 void getCenter(int*, int*);
 void drawGrid(int startx, int starty);
@@ -15,6 +16,9 @@ int main(){
     struct physList *pl = pl_create();
     int topLeftX, topLeftY;
     getCenter(&topLeftX, &topLeftY);
+
+    char character[2] = {'e','\0'};
+    struct physItem *bird = pl_subscribe(character, W/2, H/2, pl, 0.5f, true, 0.5f);
     /* ***********************************************/
 
     // ncurses window setup
@@ -29,7 +33,13 @@ int main(){
 
         erase();
         drawGrid(topLeftX, topLeftY);
-        phys_iterate(pl, topLeftX, topLeftY, false); // updates items and draws them too.
+
+        if (getch() != ERR){
+            pi_applyForce(bird, (struct vect) {0,-10});
+        }
+        phys_iterate(pl, topLeftX, topLeftY, true); // updates items and draws them too.
+
+        clock_gettime(CLOCK_MONOTONIC, )
 
         refresh();
         usleep(800 * 1000);
