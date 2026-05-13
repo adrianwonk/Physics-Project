@@ -22,8 +22,8 @@ void phys_enforce(struct physItem *, float);
 
 void phys_enforce(struct physItem *target, float delta){
     float mass = target -> mass;
-    float force = target -> force;
-    target -> force = (struct vect){0,0};
+    struct vect force = target -> F_total;
+    target -> F_total = (struct vect){0,0};
     
     struct vect accel = ve_scale(force, inv(mass));
     struct vect scaled = ve_scale(accel, delta);

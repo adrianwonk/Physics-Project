@@ -25,7 +25,7 @@ float ve_angle(float sqr1, float sqr2, float dprod){
 }
 
 struct vect ve_scale(struct vect v1, float scale){
-    return {v1.x * scale, v1.y * scale};
+    return (struct vect){v1.x * scale, v1.y * scale};
 }
 /*******************************************************/
 

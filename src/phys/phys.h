@@ -18,6 +18,7 @@
         struct vect coords;
         struct physItem *next;
         float radius;
+        float mass;
         struct vect F_total;
     };
 /******************************************************************/

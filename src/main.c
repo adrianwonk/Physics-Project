@@ -28,6 +28,15 @@ int main(){
     nodelay(stdscr, true);
     curs_set(0); // hides cursor
     /* ***********************************************/
+    
+    // timer setup
+    struct timespec ts;
+    float t1;
+    float t2;
+
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    t1 = ts.tv_sec;
+    /* ***********************************************/
 
     while (1){
 
@@ -37,9 +46,12 @@ int main(){
         if (getch() != ERR){
             pi_applyForce(bird, (struct vect) {0,-10});
         }
-        phys_iterate(pl, topLeftX, topLeftY, true); // updates items and draws them too.
 
-        clock_gettime(CLOCK_MONOTONIC, )
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        t2 = ts.tv_sec;
+        phys_iterate(pl, topLeftX, topLeftY, true, t2-t1);
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        t1 = ts.tv_sec;
 
         refresh();
         usleep(800 * 1000);
@@ -47,7 +59,6 @@ int main(){
     
     // destructors
     endwin();
-    free(b1);
     pl_destroy(pl);
     /* ***********************************************/
 

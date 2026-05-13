@@ -1,10 +1,16 @@
-#include "objects.h"
+#include "phys.h"
 #include <stdlib.h>
 /* physList and physItem functions
  *  each physList manages memory for physItems.
 
 /* physList
  */
+
+struct physItem *pi_create(void *, int , int , float , float );
+void pi_destroy(struct physItem *);
+void pl_addItem(struct physItem *, struct physList *);
+
+
 struct physList * pl_create(){
     struct physList *tmp = malloc(sizeof(struct physList));
     *tmp = (struct physList) {
@@ -54,7 +60,7 @@ struct physItem *pi_create(void *obj, int startx, int starty, float radius, floa
         .coords = (struct vect){startx, starty},
         .next = NULL,
         .radius = radius,
-        .mass = mass
+        .mass = mass,
         .F_total  = (struct vect) {0,0}
     };
     return target;
