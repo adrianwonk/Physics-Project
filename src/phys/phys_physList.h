@@ -1,0 +1,15 @@
+#pragma once
+#include "obj.h"
+
+struct physList * pl_create();
+
+// frees physList and all physItems within.
+void pl_destroy(struct physList *pList);
+struct physItem * pl_subscribe(void *, int, int, struct physList *,
+                  float, bool, float);
+
+/* physItem
+ * */
+void * pi_getItem(struct physItem *);
+bool pi_isOperational(struct physItem *);
+void pi_applyForce(struct physItem *, struct vect);

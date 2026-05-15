@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "log.h"
 #include "phys/phys.h"
 #include "math/math.h"
 #include "const.h"
@@ -18,7 +19,7 @@ int main(){
     getCenter(&topLeftX, &topLeftY);
 
     char character[2] = {'e','\0'};
-    struct physItem *bird = pl_subscribe(character, W/2, H/2, pl, 0.5f, true, 0.5f);
+    struct physItem *bird = pl_subscribe(character, W/2, H/2, pl, 0.5f, true, 1.f);
     /* ***********************************************/
 
     // ncurses window setup
@@ -44,8 +45,11 @@ int main(){
         drawGrid(topLeftX, topLeftY);
 
         if (getch() != ERR){
-            pi_applyForce(bird, (struct vect) {0,-10});
+            log_append("PRESSED!: vel:{%.1d, %.1d}\n"
+                    , bird -> velocity . x, bird -> velocity.y );
+            pi_applyForce(bird, (struct vect) {0,-5});
         }
+
 
         clock_gettime(CLOCK_MONOTONIC, &ts);
         t2 = ts.tv_sec;

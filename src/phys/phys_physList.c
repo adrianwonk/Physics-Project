@@ -42,11 +42,11 @@ struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physLis
     return tmp;
 }
 
-void pl_addItem(struct physItem *pItem, struct physList *pList){
-    pItem->next = pList->head;
-    pList->head = pItem;
-    pList->size++;
-}
+    void pl_addItem(struct physItem *pItem, struct physList *pList){
+        pItem->next = pList->head;
+        pList->head = pItem;
+        pList->size++;
+    }
 /****************************************************/
 
 /* physItem
@@ -79,7 +79,7 @@ bool pi_isOperational(struct physItem *target){
 }
 
 void pi_applyForce(struct physItem *target, struct vect force){
-    target -> F_total = ve_add(target ->F_total, force);
+    target -> F_total = ve_add(target -> F_total, force);
     
     target -> processFlag = true;
 }

@@ -4,8 +4,8 @@
 #include <math.h>
 #include <ncurses.h>
 
-#include "phys.h"
-#include "phys_physList.c"
+#include "../log.h"
+#include "phys_physList.h"
 #include "../const.h"
 
 #define PI 3.1415927
@@ -14,7 +14,7 @@
 /* forward declarations
  * */
 //----------------------------------------------------/
-void phys_gravity(struct physItem *);
+void phys_gravity(struct physItem *, float, float);
 void phys_detect(struct physItem *, struct physList *, float);
 void phys_collide(struct physItem *, struct physItem **, int);
 void phys_enforce(struct physItem *, float);
@@ -39,7 +39,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
     for (int i = 0; i < num && target != NULL; i++, target = target->next){
     ////////////////////////////////////////////////////////////
         if (target -> processFlag){
-            phys_gravity(target);
+            phys_gravity(target, 1, delta);
             
             // 1. Process force, accumulate velocity
             phys_enforce(target, delta);
@@ -47,13 +47,16 @@ void phys_iterate(struct physList *pList, int topLeftX,
             phys_detect(target, pList, delta); // move and collide
         }
         if ( !clip || (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0) ){
+            log_append("vel:{%.1d, %.1d}\n"
+                    , target -> velocity.x, target -> velocity.y );
             mvprintw(topLeftY+ target->coords.y,
                 topLeftX+ target->coords.x,
                 (char*)pi_getItem(target));
 
     ///////////////////////////////////////////////////////////
-    }
+        }
     // iteator logic end
+    }
 }
 
 void phys_gravity(struct physItem *target, float gravity, float delta){
