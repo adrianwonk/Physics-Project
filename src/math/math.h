@@ -2,17 +2,22 @@
 
 /* vect
  * */
-struct vect {
+struct vectd {
     int x; int y;
+};
+
+struct vectf {
+    float x; float y;
 };
 /****************************************************/
 /* vect */
-struct vect ve_add(struct vect v1, struct vect v2);
-struct vect ve_sub(struct vect v1, struct vect v2);
-float ve_sumOfSquare(struct vect v);
-float ve_dot(struct vect v1, struct vect v2);
+struct vectf ve_add(struct vectf v1, struct vectf v2);
+struct vectf ve_sub(struct vectf v1, struct vectf v2);
+float ve_sumOfSquare(struct vectf v);
+float ve_dot(struct vectf v1, struct vectf v2);
 float ve_angle(float sqr1, float sqr2, float dprod);
-struct vect ve_scale(struct vect v1, float scale);
+struct vectf ve_scale(struct vectf v1, float scale);
+struct vectd ve_squash(struct vectf);
 
 
 /* math */

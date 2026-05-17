@@ -1,20 +1,20 @@
 #include "math.h"
 #include <math.h>
-/* vect functions
+/* vectf functions
  * */
-struct vect ve_add(struct vect v1, struct vect v2){
-    return (struct vect) {v1.x + v2.x, v1.y + v2.y};
+struct vectf ve_add(struct vectf v1, struct vectf v2){
+    return (struct vectf) {v1.x + v2.x, v1.y + v2.y};
 }
 
-struct vect ve_sub(struct vect v1, struct vect v2){
-    return (struct vect) {v1.x - v2.x, v1.y - v2.y};
+struct vectf ve_sub(struct vectf v1, struct vectf v2){
+    return (struct vectf) {v1.x - v2.x, v1.y - v2.y};
 }
 
-float ve_sumOfSquare(struct vect v){
+float ve_sumOfSquare(struct vectf v){
     return v.x * v.x + v.y * v.y;
 }
 
-float ve_dot(struct vect v1, struct vect v2){
+float ve_dot(struct vectf v1, struct vectf v2){
     return v1.x * v2.x + v1.y * v2.y;
 }
 
@@ -24,8 +24,14 @@ float ve_angle(float sqr1, float sqr2, float dprod){
     return acosf(dprod * invSqr(multSqr));
 }
 
-struct vect ve_scale(struct vect v1, float scale){
-    return (struct vect){v1.x * scale, v1.y * scale};
+struct vectf ve_scale(struct vectf v1, float scale){
+    return (struct vectf){v1.x * scale, v1.y * scale};
+}
+
+struct vectd ve_squash(struct vectf v){
+    return (struct vectd) {
+        (v.x >= (int) v.x + 0.5f) ? (int) v.x + 1 : (int) v.x,
+        (v.y >= (int) v.y + 0.5f) ? (int) v.y + 1 : (int) v.y};
 }
 /*******************************************************/
 

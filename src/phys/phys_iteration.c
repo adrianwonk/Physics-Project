@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,8 +6,10 @@
 #include <ncurses.h>
 
 #include "../log.h"
+#include "obj.h"
 #include "phys_physList.h"
 #include "../const.h"
+#include "../math/math.h"
 
 #define PI 3.1415927
 #define PI_HALF 1.5707964
@@ -22,11 +25,15 @@ void phys_enforce(struct physItem *, float);
 
 void phys_enforce(struct physItem *target, float delta){
     float mass = target -> mass;
-    struct vect force = target -> F_total;
-    target -> F_total = (struct vect){0,0};
+
+    /* reads F_total and resets it */
+    pthread_mutex_lock(&(target->F_lock));
+        struct vectf force = target -> F_total;
+        target -> F_total = (struct vectf){0,0};
+    pthread_mutex_unlock(&(target->F_lock));
     
-    struct vect accel = ve_scale(force, inv(mass));
-    struct vect scaled = ve_scale(accel, delta);
+    struct vectf accel = ve_scale(force, inv(mass));
+    struct vectf scaled = ve_scale(accel, delta);
     target -> velocity = ve_add(target->velocity, scaled);
 }
 /* phys iteration 
@@ -47,10 +54,11 @@ void phys_iterate(struct physList *pList, int topLeftX,
             phys_detect(target, pList, delta); // move and collide
         }
         if ( !clip || (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0) ){
-            log_append("vel:{%.1d, %.1d}\n"
-                    , target -> velocity.x, target -> velocity.y );
-            mvprintw(topLeftY+ target->coords.y,
-                topLeftX+ target->coords.x,
+            log_item("", target);
+
+            struct vectd coords = ve_squash(target->coords);
+            mvprintw(topLeftY+ coords.y,
+                topLeftX+ coords.x,
                 (char*)pi_getItem(target));
 
     ///////////////////////////////////////////////////////////
@@ -62,7 +70,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
 void phys_gravity(struct physItem *target, float gravity, float delta){
     // bypasses force system cuz all objects have the same acceleration!
     target -> velocity = ve_add(target -> velocity,
-            (struct vect){0, gravity * delta}
+            (struct vectf){0, gravity * delta}
     );
 }
 
@@ -70,7 +78,7 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
     /* 1. force applied to origin
      * 2. pre-magnitude 
      * 3.  magnitude */
-    struct vect vect_force = origin->velocity;
+    struct vectf vect_force = origin->velocity;
     float sqrSumForce = ve_sumOfSquare(vect_force);
     float mag_force = root(sqrSumForce); 
 
@@ -90,7 +98,7 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
         /* target: origin -> target
          * force: origin -> origin + force
          */ 
-        struct vect vect_target = ve_sub(target->coords, origin->coords);
+        struct vectf vect_target = ve_sub(target->coords, origin->coords);
         float sqrSumTarget = ve_sumOfSquare(vect_target);
         float radius = target->radius + origin->radius;
 
@@ -136,9 +144,9 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
 
 void phys_collide(struct physItem *target, struct physItem **victimArr, int n){
     target->processFlag = false;
-    target->coords = (struct vect){target->coords.x,22};
+    target->coords = (struct vectf){target->coords.x,22};
     for (int i = 0; i < n; i++){
         victimArr[i]->processFlag = false;
-        victimArr[i]->coords = (struct vect){target->coords.x,23 + i};
+        victimArr[i]->coords = (struct vectf){target->coords.x,23 + i};
     }
 }

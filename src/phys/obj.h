@@ -1,4 +1,8 @@
+#pragma once
+#include <stdbool.h>
 #include "../math/math.h"
+#include <pthread.h>
+
 /* objects */ 
 //----------------------------------------------------/
     struct physList { // each physList manages memory for physItems.
@@ -12,12 +16,13 @@
         void *obj; // item //
         
         // delta displacement applied to coords each timestep, accumulated from forces
-        struct vect velocity;
+        struct vectf velocity;
         bool processFlag;
-        struct vect coords;
+        struct vectf coords;
         struct physItem *next;
         float radius;
         float mass;
-        struct vect F_total;
+        struct vectf F_total;
+        pthread_mutex_t F_lock;
     };
 /******************************************************************/

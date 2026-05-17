@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <ncurses.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -16,7 +17,6 @@ void drawGrid(int startx, int starty);
 int main(){
     struct physList *pl = pl_create();
     int topLeftX, topLeftY;
-    getCenter(&topLeftX, &topLeftY);
 
     char character[2] = {'e','\0'};
     struct physItem *bird = pl_subscribe(character, W/2, H/2, pl, 0.5f, true, 1.f);
@@ -28,6 +28,7 @@ int main(){
     noecho();
     nodelay(stdscr, true);
     curs_set(0); // hides cursor
+    getCenter(&topLeftX, &topLeftY);
     /* ***********************************************/
     
     // timer setup
@@ -44,21 +45,23 @@ int main(){
         erase();
         drawGrid(topLeftX, topLeftY);
 
+        // jump
         if (getch() != ERR){
-            log_append("PRESSED!: vel:{%.1d, %.1d}\n"
-                    , bird -> velocity . x, bird -> velocity.y );
-            pi_applyForce(bird, (struct vect) {0,-5});
+            if (pi_isFalling(bird)) pi_resetVelocity(bird);
+            pi_applyForce(bird, (struct vectf) {0,-5});
+            // log
+            log_item("PRESSED!: " , bird);
         }
 
 
         clock_gettime(CLOCK_MONOTONIC, &ts);
-        t2 = ts.tv_sec;
+        t2 = ts.tv_sec + ts.tv_nsec * 1e-9f;
         phys_iterate(pl, topLeftX, topLeftY, true, t2-t1);
         clock_gettime(CLOCK_MONOTONIC, &ts);
-        t1 = ts.tv_sec;
+        t1 = ts.tv_sec + ts.tv_nsec * 1e-9f;
 
         refresh();
-        usleep(800 * 1000);
+        /* usleep(800 * 1000); */
     }
     
     // destructors
