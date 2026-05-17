@@ -3,6 +3,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include <unistd.h>
 #include <time.h>
 
@@ -13,6 +14,38 @@
 
 void getCenter(int*, int*);
 void drawGrid(int startx, int starty);
+
+/* ASYNC ADD FORCE*****/
+struct thread_args = {
+    float duration;
+    struct vectf amt;
+    struct physItem *target;
+};
+
+void addForceOverTime(struct physItem * target, float sec){
+    // warning! probably better to store references in main.c so we can kill threads running too long.
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_helper, NULL);
+    // warning! probably better not to detach thread.
+    pthread_detach(thread);
+}
+
+void *thread_helper(void *input) {
+    // semaphore to signal 
+    struct thread_args *args = (struct thread_args *)input;
+    float acc;
+    sem_t signal;
+    sem_init(&sem, 0, 0);
+
+    while (1){
+        pi_applyForce( args -> target,  args -> amt );
+        //
+        // wait for phys_iterate to increment acc
+        sem_wait(&sem);
+        if ( acc > args -> duration ) return NULL;
+    }
+}
+/*****/
 
 int main(){
     struct physList *pl = pl_create();
