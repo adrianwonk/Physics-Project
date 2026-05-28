@@ -21,7 +21,44 @@ void phys_gravity(struct physItem *, float, float);
 void phys_detect(struct physItem *, struct physList *, float);
 void phys_collide(struct physItem *, struct physItem **, int);
 void phys_enforce(struct physItem *, float);
+void phys_processTimedForce( struct physItem *target, float delta );
 /****************************************************/
+
+
+/* phys iteration 
+ * */
+void phys_iterate(struct physList *pList, int topLeftX,
+               int topLeftY, bool clip, float delta){
+    struct physItem *target;
+    int num;
+
+    target = pList->head;
+    num = pList->size;
+    for (int i = 0; i < num; i++, target = target->next){
+        if (! (target -> processFlag)) continue;
+
+        // 0. Gravity bypass force system
+        phys_gravity(target, 1, delta);
+        
+        // 1. Process force, accumulate velocity
+        phys_enforce(target, delta);
+        
+        // 2. Move and collide based on velocity
+        phys_detect(target, pList, delta); 
+
+        // 3. Process timed force applications
+        phys_processTimedForce(target, delta);
+
+        if ( !clip || (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0) ){
+            log_item("", target);
+
+            struct vectd coords = ve_squash(target->coords);
+            mvprintw(topLeftY+ coords.y,
+                topLeftX+ coords.x,
+                (char*)pi_getItem(target));
+        }
+    }
+}
 
 void phys_enforce(struct physItem *target, float delta){
     float mass = target -> mass;
@@ -36,34 +73,31 @@ void phys_enforce(struct physItem *target, float delta){
     struct vectf scaled = ve_scale(accel, delta);
     target -> velocity = ve_add(target->velocity, scaled);
 }
-/* phys iteration 
- * */
-void phys_iterate(struct physList *pList, int topLeftX,
-               int topLeftY, bool clip, float delta){
-    // iterator logic start
-    struct physItem *target = pList->head;
-    int num = pList->size;
-    for (int i = 0; i < num && target != NULL; i++, target = target->next){
-    ////////////////////////////////////////////////////////////
-        if (target -> processFlag){
-            phys_gravity(target, 1, delta);
-            
-            // 1. Process force, accumulate velocity
-            phys_enforce(target, delta);
-            // n. Process displacement change
-            phys_detect(target, pList, delta); // move and collide
-        }
-        if ( !clip || (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0) ){
-            log_item("", target);
 
-            struct vectd coords = ve_squash(target->coords);
-            mvprintw(topLeftY+ coords.y,
-                topLeftX+ coords.x,
-                (char*)pi_getItem(target));
-
-    ///////////////////////////////////////////////////////////
+void phys_processTimedForce( struct physItem *target, float delta ){
+    struct timeBlock *prev = NULL; // prev ptr is either NULL, or previous timeBlock in iteration.
+    struct timeBlock *curr = target->time_q;
+    while ( curr != NULL ){
+        // deplete remaining time by deltaTime, then delete or re-applyForce
+        curr->t_remain -= delta;
+        if (curr -> t_remain <= 0.f){ // delete!
+            if (prev == NULL){
+                target -> time_q = curr -> next; 
+                free(curr);
+                curr = target -> time_q; 
+                continue;
+            } else {
+                prev->next = curr->next;
+                free(curr);
+                curr = prev -> next;
+                continue;
+            }
         }
-    // iteator logic end
+
+        pi_applyForce( target, curr->force );
+
+        prev = curr;
+        curr = curr->next;
     }
 }
 
@@ -74,6 +108,7 @@ void phys_gravity(struct physItem *target, float gravity, float delta){
     );
 }
 
+// COLLISION DETECTION AND HANDLING ========================================
 void phys_detect(struct physItem *origin, struct physList * pList, float delta){
     /* 1. force applied to origin
      * 2. pre-magnitude 
@@ -150,3 +185,4 @@ void phys_collide(struct physItem *target, struct physItem **victimArr, int n){
         victimArr[i]->coords = (struct vectf){target->coords.x,23 + i};
     }
 }
+// --COLLISION DETECTION AND HANDLING ****************************************

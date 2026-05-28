@@ -6,7 +6,8 @@ struct physList * pl_create();
 
 // frees physList and all physItems within.
 void pl_destroy(struct physList *pList);
-struct physItem * pl_subscribe(void *, int, int, struct physList *, float, bool, float);
+struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physList *list,
+                  float radius, bool process, float mass);
 
 /* physItem
  * */

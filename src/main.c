@@ -1,3 +1,4 @@
+#include <locale.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <ncurses.h>
@@ -15,39 +16,13 @@
 void getCenter(int*, int*);
 void drawGrid(int startx, int starty);
 
-/* ASYNC ADD FORCE*****/
-struct thread_args = {
-    float duration;
-    struct vectf amt;
-    struct physItem *target;
-};
-
-void addForceOverTime(struct physItem * target, float sec){
-    // warning! probably better to store references in main.c so we can kill threads running too long.
-    pthread_t thread;
-    pthread_create(&thread, NULL, thread_helper, NULL);
-    // warning! probably better not to detach thread.
-    pthread_detach(thread);
-}
-
-void *thread_helper(void *input) {
-    // semaphore to signal 
-    struct thread_args *args = (struct thread_args *)input;
-    float acc;
-    sem_t signal;
-    sem_init(&sem, 0, 0);
-
-    while (1){
-        pi_applyForce( args -> target,  args -> amt );
-        //
-        // wait for phys_iterate to increment acc
-        sem_wait(&sem);
-        if ( acc > args -> duration ) return NULL;
-    }
-}
-/*****/
-
+// void *input_listener(void * args){
+    
+// }
+// pthread_create();
 int main(){
+    setlocale(LC_ALL, "C.UTF-8");
+
     struct physList *pl = pl_create();
     int topLeftX, topLeftY;
 
@@ -70,22 +45,20 @@ int main(){
     float t2;
 
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    t1 = ts.tv_sec;
+        t1 = ts.tv_sec + ts.tv_nsec * 1e-9f;
     /* ***********************************************/
 
     while (1){
-
         erase();
         drawGrid(topLeftX, topLeftY);
 
         // jump
         if (getch() != ERR){
             if (pi_isFalling(bird)) pi_resetVelocity(bird);
-            pi_applyForce(bird, (struct vectf) {0,-5});
+            pi_timedForce(bird, 1.f, (struct vectf) {0,-4});
             // log
             log_item("PRESSED!: " , bird);
         }
-
 
         clock_gettime(CLOCK_MONOTONIC, &ts);
         t2 = ts.tv_sec + ts.tv_nsec * 1e-9f;
@@ -94,7 +67,7 @@ int main(){
         t1 = ts.tv_sec + ts.tv_nsec * 1e-9f;
 
         refresh();
-        /* usleep(800 * 1000); */
+        napms(16);
     }
     
     // destructors

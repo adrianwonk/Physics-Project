@@ -6,6 +6,7 @@
 
 /* physics stuff*/
     void phys_iterate(struct physList *, int, int, bool, float);
+    void pi_timedForce(struct physItem *target, float sec, struct vectf force );
 /****************************************************/
 
 

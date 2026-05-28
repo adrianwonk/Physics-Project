@@ -3,6 +3,12 @@
 #include "../math/math.h"
 #include <pthread.h>
 
+struct timeBlock {
+    float t_remain;
+    struct vectf force;
+    struct timeBlock *next;
+};
+
 /* objects */ 
 //----------------------------------------------------/
     struct physList { // each physList manages memory for physItems.
@@ -24,5 +30,6 @@
         float mass;
         struct vectf F_total;
         pthread_mutex_t F_lock;
+        struct timeBlock *time_q;
     };
 /******************************************************************/

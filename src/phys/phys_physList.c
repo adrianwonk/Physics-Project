@@ -9,7 +9,26 @@
 struct physItem *pi_create(void *, int , int , float , float );
 void pi_destroy(struct physItem *);
 void pl_addItem(struct physItem *, struct physList *);
+void pi_applyForce(struct physItem *, struct vectf );
 /*********************************************************/
+
+void pi_timedForce(struct physItem *target, float sec, struct vectf force ){
+    // requeue logic
+    // MEM CREATE ============================
+    struct timeBlock *tmp = malloc(sizeof(struct timeBlock));
+    // =========================================
+
+    *tmp = (struct timeBlock){
+        .t_remain = sec,
+        .force = force,
+        .next = target->time_q
+    };
+
+    target->time_q = tmp;
+
+    // first force application
+    pi_applyForce ( target, force );
+}
 
 struct physList * pl_create(){
     struct physList *tmp = malloc(sizeof(struct physList));
