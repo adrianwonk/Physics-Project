@@ -6,12 +6,12 @@ struct physList * pl_create();
 
 // frees physList and all physItems within.
 void pl_destroy(struct physList *pList);
-struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physList *list,
-                  float radius, bool process, float mass);
+struct physItem * pl_subscribe(char *obj, int startx, int starty, struct physList *list,
+                  float radius, bool process, float mass, struct vectf);
 
 /* physItem
  * */
-void * pi_getItem(struct physItem *);
+char * pi_getItem(struct physItem *);
 bool pi_isOperational(struct physItem *);
 void pi_applyForce(struct physItem *, struct vectf);
 void pi_resetVelocity(struct physItem *target);

@@ -6,7 +6,7 @@
 
 
 // forward declarations
-struct physItem *pi_create(void *, int , int , float , float );
+struct physItem *pi_create(char *, int , int , float , float, struct vectf );
 void pi_destroy(struct physItem *);
 void pl_addItem(struct physItem *, struct physList *);
 void pi_applyForce(struct physItem *, struct vectf );
@@ -53,9 +53,9 @@ void pl_destroy(struct physList *pList){
     }
 }
 
-struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physList *list,
-                  float radius, bool process, float mass){
-    struct physItem *tmp = pi_create(obj,startx,starty,radius,mass);
+struct physItem * pl_subscribe(char *obj, int startx, int starty, struct physList *list,
+                  float radius, bool process, float mass, struct vectf gravity){
+    struct physItem *tmp = pi_create(obj,startx,starty,radius,mass,gravity);
     tmp -> processFlag = process;
     pl_addItem(tmp,list);
     return tmp;
@@ -73,7 +73,7 @@ struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physLis
 /* physItem */
 //===HIDE===================================================
     /* pis are physList layer primitives only. */
-    struct physItem *pi_create(void *obj, int startx, int starty, float radius, float mass) {
+    struct physItem *pi_create(char *obj, int startx, int starty, float radius, float mass, struct vectf gravity) {
         struct physItem *target = malloc(sizeof(struct physItem));
         *target = (struct physItem) {
             .obj = obj,
@@ -83,7 +83,8 @@ struct physItem * pl_subscribe(void *obj, int startx, int starty, struct physLis
             .next = NULL,
             .radius = radius,
             .mass = mass,
-            .F_total  = (struct vectf) {0,0}
+            .F_total  = (struct vectf) {0,0},
+            .gravity = gravity
         };
         pthread_mutex_init(&(target->F_lock), NULL);
         return target;

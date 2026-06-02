@@ -19,7 +19,7 @@ struct timeBlock {
     };
 
     struct physItem { // phys wrapper for frontend objects.
-        void *obj; // item //
+        char *obj; // item //
         
         // delta displacement applied to coords each timestep, accumulated from forces
         struct vectf velocity;
@@ -31,5 +31,6 @@ struct timeBlock {
         struct vectf F_total;
         pthread_mutex_t F_lock;
         struct timeBlock *time_q;
+        struct vectf gravity;
     };
 /******************************************************************/

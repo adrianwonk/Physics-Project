@@ -5,7 +5,7 @@
 #include "phys_physList.h"
 
 /* physics stuff*/
-    void phys_iterate(struct physList *, int, int, bool, float);
+    void phys_iterate(struct physList *, int, int, float);
     void pi_timedForce(struct physItem *target, float sec, struct vectf force );
 /****************************************************/
 

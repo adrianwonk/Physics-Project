@@ -17,7 +17,7 @@
 /* forward declarations
  * */
 //----------------------------------------------------/
-void phys_gravity(struct physItem *, float, float);
+void phys_gravity(struct physItem *, float);
 void phys_detect(struct physItem *, struct physList *, float);
 void phys_collide(struct physItem *, struct physItem **, int);
 void phys_enforce(struct physItem *, float);
@@ -28,7 +28,7 @@ void phys_processTimedForce( struct physItem *target, float delta );
 /* phys iteration 
  * */
 void phys_iterate(struct physList *pList, int topLeftX,
-               int topLeftY, bool clip, float delta){
+               int topLeftY, float delta){
     struct physItem *target;
     int num;
 
@@ -38,7 +38,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
         if (! (target -> processFlag)) continue;
 
         // 0. Gravity bypass force system
-        phys_gravity(target, 1, delta);
+        phys_gravity(target, delta);
         
         // 1. Process force, accumulate velocity
         phys_enforce(target, delta);
@@ -49,14 +49,6 @@ void phys_iterate(struct physList *pList, int topLeftX,
         // 3. Process timed force applications
         phys_processTimedForce(target, delta);
 
-        if ( !clip || (target->coords.x < W && target->coords.x >= 0 && target -> coords.y < H && target -> coords.y >= 0) ){
-            log_item("", target);
-
-            struct vectd coords = ve_squash(target->coords);
-            mvprintw(topLeftY+ coords.y,
-                topLeftX+ coords.x,
-                (char*)pi_getItem(target));
-        }
     }
 }
 
@@ -101,10 +93,9 @@ void phys_processTimedForce( struct physItem *target, float delta ){
     }
 }
 
-void phys_gravity(struct physItem *target, float gravity, float delta){
+void phys_gravity(struct physItem *target, float delta){
     // bypasses force system cuz all objects have the same acceleration!
-    target -> velocity = ve_add(target -> velocity,
-            (struct vectf){0, gravity * delta}
+    target -> velocity = ve_add(target -> velocity, ve_scale(target -> gravity, delta)
     );
 }
 
