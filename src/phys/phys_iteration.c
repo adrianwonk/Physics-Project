@@ -13,6 +13,13 @@
 
 #define PI 3.1415927
 #define PI_HALF 1.5707964
+#define COL_MAX 5
+
+// CURRENT ASSUMPTIONS:
+// - no elasticity
+// - objects move one at a time, in order of subscription
+
+
 
 /* forward declarations
  * */
@@ -52,6 +59,7 @@ void phys_iterate(struct physList *pList, int topLeftX,
     }
 }
 
+// apply a force vector (mass times acceleration) over a period of time.
 void phys_enforce(struct physItem *target, float delta){
     float mass = target -> mass;
 
@@ -66,19 +74,22 @@ void phys_enforce(struct physItem *target, float delta){
     target -> velocity = ve_add(target->velocity, scaled);
 }
 
+// Acknowledge delta for each timeBlock, re-queue unexpired forces.
 void phys_processTimedForce( struct physItem *target, float delta ){
     struct timeBlock *prev = NULL; // prev ptr is either NULL, or previous timeBlock in iteration.
     struct timeBlock *curr = target->time_q;
     while ( curr != NULL ){
-        // deplete remaining time by deltaTime, then delete or re-applyForce
+        // deplete remaining time by deltaTime
         curr->t_remain -= delta;
-        if (curr -> t_remain <= 0.f){ // delete!
-            if (prev == NULL){
+
+        // check timeBlock expiration
+        if (curr -> t_remain <= 0.f){ 
+            if (prev == NULL){ // delete head
                 target -> time_q = curr -> next; 
                 free(curr);
                 curr = target -> time_q; 
                 continue;
-            } else {
+            } else { // delete body
                 prev->next = curr->next;
                 free(curr);
                 curr = prev -> next;
@@ -113,9 +124,13 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
     int num = pList->size;
 
     // Targets with minimum dist to origin
-    struct physItem* minTargs[5];
+    struct physItem* minTargs[COL_MAX];
     float minSqrSumDist=INT_MAX;
     int minTargsIndex = 0;
+
+    // collision helper variables
+    float theta_col , sine_col , dist_target_col , tangent_len_col, radius_col;
+    struct vectf target_pos;
 
     for (int i = 0; i < num && target != NULL; i++, target = target->next){
     ////////////////////////////////////////////////////////////
@@ -136,23 +151,30 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
         // second check, obtuse angle
         float dotProduct = ve_dot(vect_target, vect_force);
         float theta = ve_angle(sqrSumTarget, sqrSumForce, dotProduct);
+        float sine = sinf(theta);
+        float dist_target = root(sqrSumTarget);
+        float tangent_len = sine * dist_target;
         if (theta >= PI_HALF) continue;
 
         // third check, case of shorter magnitudeForce < magnitudeTarget
         // and distance is greater than radius
         if (sqrSumForce < sqrSumTarget){
             if(ve_sumOfSquare(ve_sub(vect_target,vect_force)) >= sqr(radius))
-                continue;
-        } else {
+                continue; }
         // case of longer magnitudeForce, shortest distance is longer than radius
-            if (sqr(sinf(theta)) * sqrSumTarget >= sqr(radius)) continue;
-        }
+        else if ( tangent_len >= radius) continue;
         
         // add to collision consideration
         if (sqrSumTarget < minSqrSumDist){
             minSqrSumDist = sqrSumTarget;
             minTargsIndex = 1;
             minTargs[0] = target;
+            theta_col = theta; 
+            sine_col = sine;
+            dist_target_col = dist_target;
+            tangent_len_col = tangent_len;
+            radius_col = radius;
+            target_pos = target->coords;
         }
 
         else if (sqrSumTarget == minSqrSumDist){
@@ -161,6 +183,16 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
     //////////////////////////////////////////////////////////////
     }
     if (minSqrSumDist != INT_MAX){
+        // backtrack
+        struct vectf normal = (struct vectf) {-vect_force.y, vect_force.x};
+        normal = ve_scale(normal, invSqr( sqr(normal.x) + sqr(normal.y) ) * tangent_len_col );
+
+        float backtrack = root( sqr(radius_col) - sqr(tangent_len_col) );
+        struct vectf reverse = ve_scale(vect_force, -1);
+        reverse = ve_scale(reverse, invSqr( sqr(reverse.x) + sqr(reverse.y) ) * backtrack );
+
+        origin->coords = ve_add(ve_add(target_pos, normal) , reverse);
+
         phys_collide(origin, minTargs, minTargsIndex);
         return;    
     } else {
@@ -169,11 +201,24 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
 }
 
 void phys_collide(struct physItem *target, struct physItem **victimArr, int n){
-    target->processFlag = false;
-    target->coords = (struct vectf){target->coords.x,22};
-    for (int i = 0; i < n; i++){
-        victimArr[i]->processFlag = false;
-        victimArr[i]->coords = (struct vectf){target->coords.x,23 + i};
-    }
+    // conservation of momentum.
+
+    //     total_mtm = ve_add(total_mtm, ve_scale(victimArr[i]->velocity, victimArr[i]->mass));
+    // }
+
+    // struct vectf col_vects[COL_MAX];
+    // for (int i = 0; i < COL_MAX; i++){
+    //     col_vects[i] = ve_add(victimArr[i]->coords, ve_scale(target->coords, -1));
+    // }
+    
+    // // get unit vectors
+    // struct vectf unit_col_vects[COL_MAX];
+    // for (int i = 0; i < COL_MAX; i++){
+    //     float sum_of_sqrs = sqr(col_vects[i].x) + sqr(col_vects[i].y);
+    //     unit_col_vects[i] = ve_scale(victimArr[i]->coords, invSqr(sum_of_sqrs));
+    // }
+
+    // change velocity of target, and victims
+    
 }
 // --COLLISION DETECTION AND HANDLING ****************************************

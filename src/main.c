@@ -81,14 +81,14 @@ int main(){
         // jump
         if (getch() != ERR){
             if (pi_isFalling(bird)) pi_resetVelocity(bird);
-            pi_timedForce(bird, 0.1f, (struct vectf) {0,-50});
+            pi_timedForce(bird, 0.1f, (struct vectf) {0,-50}); // enqueue a force for next DELTA SLICE. AUTO ENQUEUES AT THE END OF EACH DELTA SLICE
             // log
-            log_item("PRESSED!: " , bird);
         }
 
         t2 = getTime();
         phys_iterate(pl, topLeftX, topLeftY, t2-t1);
         t1 = getTime();
+            log_item("", bird, t2-t1);
 
         // DRAW
         erase();
