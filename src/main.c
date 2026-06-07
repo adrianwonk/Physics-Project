@@ -3,15 +3,15 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
-#include "main.h"
 
 #include "phys/phys.h"
 #include "math/math.h"
+#include "const.h"
 
 void getCenter(int*, int*);
 void drawGrid(int startx, int starty);
 void addFloor(struct physList * list);
-struct ball * floorB[W];
+
 struct physItem * floorP[W];
 
 int main(){
@@ -20,11 +20,8 @@ int main(){
 
     addFloor(pl);
 
-    struct ball *b1 = constructItem(3, 'o');
-    struct ball *b2 = constructItem(3, 'o');
-
-    pl_subscribe(b1, 5,  5, pl, 1, true );
-    pl_subscribe(b2, 1, 1, pl, 1, false );
+    struct physitem *b1 = pl_subscribe("o", 5, 3, pl, 0.5, true, 1, (struct vectf){0,-1});
+    struct physitem *b2 = pl_subscribe("f", 10, 7, pl, 0.5, true, 1, (struct vectf){0,-1});
 
     // init window
     initscr();
@@ -38,6 +35,7 @@ int main(){
     while (1){
         erase();
         drawGrid(topLeftX, topLeftY);
+
         phys_iterate(pl, topLeftX, topLeftY, false); // updates items and draws them too.
         refresh();
         usleep(800 * 1000);
@@ -71,7 +69,6 @@ void getCenter(int* x, int* y){
 
 void addFloor(struct physList * pl){
     for (int i = 0; i < W; i++){
-        floorB[i] = constructItem(3, 'o');
-        pl_subscribe(floorB[i],  i,  H-1, pl, 0.5f, false );
+        pl_subscribe("-", 5, 3, pl, 0.5, false, 1, (struct vectf){0,0});
     }
 }
