@@ -26,6 +26,9 @@
 //----------------------------------------------------/
 void phys_detect(struct physItem *, struct physList *, float);
 void phys_collide(struct physItem *, struct physItem **, int);
+void phys_iterate(struct physList *pList, int topLeftX,
+               int topLeftY, float delta);
+void phys_collide(struct physItem *target, struct physItem **victimArr, int n);
 /****************************************************/
 
 
@@ -63,14 +66,22 @@ void phys_iterate(struct physList *pList, int topLeftX,
 }
 
 
-
-
-static inline bool check_velocity_too_short(float mag_vel, float radius, float mag_toTarget){
-    return mag_vel + radius < mag_toTarget;
+static inline bool check_velocity_too_short(float mag_vel, float radiuses, float mag_toTarget){
+    return mag_vel + radiuses < mag_toTarget;
 }
 
 static inline bool check_obtuse(float theta){
     return theta >= PI_HALF;
+}
+
+static inline bool check_tangent_too_long(float sqrsum_vel, float sqrsum_toTarget, struct vectf vect_toTarget, struct vectf vect_vel, float radiuses, float tangent_len){
+    if (sqrsum_vel < sqrsum_toTarget){
+        if(ve_sumOfSquare(ve_sub(vect_toTarget,vect_vel)) >= sqr(radiuses))
+            return true;
+    }
+    // case of longer magnitudeForce, shortest distance is longer than radius
+    else if ( tangent_len >= radiuses) return true;
+    return false;
 }
 
 // COLLISION DETECTION AND HANDLING ========================================
@@ -103,9 +114,9 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
         struct vectf vect_toTarget = ve_sub(target->coords, origin->coords);
         float sqrsum_toTarget = ve_sumOfSquare(vect_toTarget);
         float mag_toTarget = root(sqrsum_toTarget);
-        float radius = target->radius + origin->radius;
+        float radiuses = target->radius + origin->radius;
 
-        if (check_velocity_too_short(mag_vel, radius, mag_toTarget)) continue;
+        if (check_velocity_too_short(mag_vel, radiuses, mag_toTarget)) continue;
 
         // CALC acute angle between vect_vel and vect_toTarget =======
             float dotProduct = ve_dot(vect_toTarget, vect_vel);
@@ -116,14 +127,7 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
         
         if (check_obtuse(theta)) continue;
 
-        // third check, case of shorter magnitudeForce < magnitudeTarget
-        // and distance is greater than radius
-        if (sqrsum_vel < sqrsum_toTarget){
-            if(ve_sumOfSquare(ve_sub(vect_toTarget,vect_vel)) >= sqr(radius))
-                continue;
-        }
-        // case of longer magnitudeForce, shortest distance is longer than radius
-        else if ( tangent_len >= radius) continue;
+        check_tangent_too_long(sqrsum_vel, sqrsum_toTarget, vect_toTarget, vect_vel, radiuses, tangent_len);
         
         // add to collision consideration
         if (sqrsum_toTarget < min_sqrsum){
@@ -134,7 +138,7 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
             sine_col = sine;
             dist_target_col = mag_toTarget;
             tangent_len_col = tangent_len;
-            radius_col = radius;
+            radius_col = radiuses;
             target_pos = target->coords;
         }
 
@@ -143,6 +147,8 @@ void phys_detect(struct physItem *origin, struct physList * pList, float delta){
         }
     //////////////////////////////////////////////////////////////
     }
+
+    // collision targets not empty
     if (min_sqrsum != INT_MAX){
         // backstep to point of collision 
         struct vectf normal = (struct vectf) {-vect_vel.y, vect_vel.x};
