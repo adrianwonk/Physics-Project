@@ -1,4 +1,4 @@
-#include "obj.h"
+#include "../obj.h"
 #include <stdbool.h>
 #include <stdlib.h>
 /* physList and physItem functions

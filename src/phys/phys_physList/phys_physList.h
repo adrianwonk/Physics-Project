@@ -1,6 +1,6 @@
 #pragma once
 #include <stdbool.h>
-#include "obj.h"
+#include "../obj.h"
 
 struct physList * pl_create();
 

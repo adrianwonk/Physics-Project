@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "../math/math.h"
 #include "obj.h"
-#include "phys_physList.h"
+#include "phys_physList/phys_physList.h"
 
 /* physics stuff*/
     void phys_iterate(struct physList *, int, int, float);
