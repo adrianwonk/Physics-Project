@@ -5,6 +5,7 @@ project(physics LANGUAGES C)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
+
 file(GLOB_RECURSE SOURCES "src/*.c")
 add_executable(main ${SOURCES})
 
